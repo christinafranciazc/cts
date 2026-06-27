@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de CTS (Perú)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f9fafb; }
+        .toggle-checkbox:checked { right: 0; border-color: #059669; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #059669; }
+    </style>
+</head>
+<body class="p-4 md:p-8 flex justify-center items-start min-h-screen">
+
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 w-full max-w-2xl">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2 text-center">Calculadora de CTS</h1>
+        <p class="text-gray-500 text-sm mb-6 text-center">Cálculo proporcional para el depósito semestral</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="space-y-4">
+                <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Datos para el cálculo</h2>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Sueldo Básico (S/)</label>
+                    <input type="number" id="sueldoBasico" value="2500" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Última Gratificación recibida (S/)</label>
+                    <input type="number" id="ultimaGrati" value="2500" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+                    <p class="text-[10px] text-gray-400">Si no recibiste grati, coloca 0.</p>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                    <label class="text-sm font-medium text-gray-700">Recibes Asignación Familiar</label>
+                    <input type="checkbox" id="tieneAsignacion" class="toggle-checkbox w-10 h-5 cursor-pointer">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Meses laborados en el semestre</label>
+                    <input type="number" id="meses" value="6" min="1" max="6" class="w-full px-4 py-2 border rounded-lg">
+                    <p class="text-[10px] text-gray-400">Máximo 6 meses por semestre.</p>
+                </div>
+            </div>
+
+            <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-100 flex flex-col">
+                <h2 class="text-lg font-semibold text-gray-700 border-b border-emerald-200 pb-2 mb-4">Tu CTS Estimada</h2>
+                <div class="space-y-3 text-sm flex-grow">
+                    <div class="flex justify-between"><span>Rem. Base</span><span id="resRemBase" class="font-bold">S/ 0.00</span></div>
+                    <div class="flex justify-between"><span>1/6 Gratificación</span><span id="resSexto" class="font-bold">S/ 0.00</span></div>
+                    <hr class="border-emerald-200">
+                    <div class="flex justify-between font-bold text-gray-700"><span>Rem. Computable</span><span id="resComputable">S/ 0.00</span></div>
+                </div>
+                <div class="mt-6 pt-4 border-t-2 border-emerald-200">
+                    <p class="text-sm text-gray-600 font-bold">Total Depósito CTS</p>
+                    <div class="text-3xl font-bold text-emerald-700 font-mono" id="resTotal">S/ 0.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inputBasico = document.getElementById('sueldoBasico');
+        const inputGrati = document.getElementById('ultimaGrati');
+        const checkAsig = document.getElementById('tieneAsignacion');
+        const inputMeses = document.getElementById('meses');
+
+        function calcularCTS() {
+            const basico = parseFloat(inputBasico.value) || 0;
+            const grati = parseFloat(inputGrati.value) || 0;
+            const meses = parseFloat(inputMeses.value) || 0;
+            const asig = checkAsig.checked ? 102.50 : 0;
+            
+            const remBase = basico + asig;
+            const sextoGrati = grati / 6;
+            const remComputable = remBase + sextoGrati;
+            
+            // Fórmula: (Remuneración Computable / 12) * meses laborados
+            const totalCTS = (remComputable / 12) * meses;
+
+            document.getElementById('resRemBase').textContent = 'S/ ' + remBase.toFixed(2);
+            document.getElementById('resSexto').textContent = 'S/ ' + sextoGrati.toFixed(2);
+            document.getElementById('resComputable').textContent = 'S/ ' + remComputable.toFixed(2);
+            document.getElementById('resTotal').textContent = 'S/ ' + totalCTS.toFixed(2);
+        }
+
+        [inputBasico, inputGrati, checkAsig, inputMeses].forEach(el => el.addEventListener('input', calcularCTS));
+        calcularCTS();
+    </script>
+</body>
+</html>
